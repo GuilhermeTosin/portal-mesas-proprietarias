@@ -1,9 +1,24 @@
 [
-    {
-        "id": "1",
-        "company": "Apex Trader Funding",
-        "code": "AMAZING",
-        "discount": "90%",
-        "link": "https://apextraderfunding.com/"
-    }
+  {
+    "id": "1",
+    "company": "Apex Trader Funding",
+    "code": "AMAZINGmmm",
+    "discount": "90%",
+    "link": "https://apextraderfunding.com/",
+    "expiration": "31/03",
+    "description": "Para contas de 25K e 50K apenas.",
+    "color": "cyan",
+    "featured": true
+  },
+  {
+    "id": "17723050964971",
+    "company": "aaa",
+    "code": "aaaaa",
+    "discount": "90%",
+    "link": "",
+    "expiration": "",
+    "description": "Desconto exclusivo para seguidores do Amazing Pro Traders.",
+    "color": "blue",
+    "featured": true
+  }
 ]

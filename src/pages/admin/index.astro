@@ -64,14 +64,25 @@ if (Astro.request.method === 'POST') {
       const codes = formData.getAll('code');
       const discounts = formData.getAll('discount');
       const links = formData.getAll('link');
+      const expirations = formData.getAll('expiration');
+      const descriptions = formData.getAll('description');
+      const colors = formData.getAll('color');
+      const featuredIds = formData.getAll('featured');
 
-      const newCoupons = couponIds.map((id, i) => ({
-        id: id || Date.now().toString() + i,
-        company: companies[i],
-        code: codes[i],
-        discount: discounts[i],
-        link: links[i]
-      }));
+      const newCoupons = couponIds.map((id, i) => {
+        const currentId = id || `new-${Date.now()}-${i}`;
+        return {
+          id: currentId,
+          company: companies[i],
+          code: codes[i],
+          discount: discounts[i],
+          link: links[i],
+          expiration: expirations[i],
+          description: descriptions[i] || 'Desconto exclusivo para seguidores do Amazing Pro Traders.',
+          color: colors[i] || 'blue',
+          featured: featuredIds.includes(currentId)
+        };
+      });
 
       fs.writeFileSync(couponsPath, JSON.stringify(newCoupons, null, 2));
       coupons = newCoupons;
@@ -222,7 +233,7 @@ if (Astro.request.method === 'POST') {
               
               <div id="coupons-list" class="space-y-4">
                 {coupons.map((coupon, index) => (
-                  <div class="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 bg-slate-950/50 rounded-xl border border-slate-800 hover:border-slate-700 transition-colors group">
+                  <div class="grid grid-cols-1 md:grid-cols-7 gap-3 p-4 bg-slate-950/50 rounded-xl border border-slate-800 hover:border-slate-700 transition-colors group">
                     <input type="hidden" name="id" value={coupon.id} />
                     <div class="md:col-span-1">
                       <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Mesa</label>
@@ -236,14 +247,36 @@ if (Astro.request.method === 'POST') {
                       <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Desconto</label>
                       <input type="text" name="discount" value={coupon.discount} class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500" />
                     </div>
-                    <div class="md:col-span-2 flex gap-3 items-end">
-                      <div class="flex-grow">
-                        <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Link Afiliado</label>
-                        <input type="text" name="link" value={coupon.link} class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500 text-blue-400 truncate" />
+                    <div class="md:col-span-1">
+                      <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Validade</label>
+                      <input type="text" name="expiration" value={coupon.expiration} placeholder="Ex: 31/12" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500 text-slate-300" />
+                    </div>
+                    <div class="md:col-span-1">
+                      <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Cor Card</label>
+                      <select name="color" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500 text-slate-300">
+                        {['blue', 'indigo', 'purple', 'teal', 'red', 'cyan', 'orange', 'emerald', 'fuchsia'].map(c => (
+                          <option value={c} selected={coupon.color === c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div class="md:col-span-1 flex flex-col items-center justify-center p-2 bg-slate-900 rounded border border-slate-800">
+                      <label class="text-[9px] uppercase font-bold text-slate-600 mb-1">Destaque</label>
+                      <input type="checkbox" name="featured" value={coupon.id} checked={coupon.featured} class="w-5 h-5 rounded border-slate-800 bg-slate-950 text-blue-600 focus:ring-blue-500" />
+                    </div>
+                    <div class="md:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                      <div>
+                        <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Descrição</label>
+                        <input type="text" name="description" value={coupon.description || 'Desconto exclusivo para seguidores do Amazing Pro Traders.'} class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500 text-slate-400" />
                       </div>
-                      <button type="button" onclick="this.parentElement.parentElement.remove()" class="bg-red-900/20 text-red-500 p-2 rounded-lg hover:bg-red-900/40 transition-colors opacity-0 group-hover:opacity-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                      </button>
+                      <div class="flex gap-3 items-end">
+                        <div class="flex-grow">
+                          <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Link Afiliado</label>
+                          <input type="text" name="link" value={coupon.link} class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500 text-blue-400 truncate" />
+                        </div>
+                        <button type="button" onclick="this.parentElement.parentElement.parentElement.remove()" class="bg-red-900/20 text-red-500 p-2 rounded-lg hover:bg-red-900/40 transition-colors opacity-0 group-hover:opacity-100">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -272,10 +305,11 @@ if (Astro.request.method === 'POST') {
 
   if (addBtn && container) {
     addBtn.addEventListener('click', () => {
+      const tempId = 'new-' + Date.now();
       const div = document.createElement('div');
-      div.className = 'grid grid-cols-1 md:grid-cols-5 gap-3 p-4 bg-slate-950/50 rounded-xl border border-slate-800 hover:border-slate-700 transition-colors group animate-in zoom-in-95 duration-200';
+      div.className = 'grid grid-cols-1 md:grid-cols-7 gap-3 p-4 bg-slate-950/50 rounded-xl border border-slate-800 hover:border-slate-700 transition-colors group animate-in zoom-in-95 duration-200';
       div.innerHTML = `
-        <input type="hidden" name="id" value="" />
+        <input type="hidden" name="id" value="${tempId}" />
         <div class="md:col-span-1">
           <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Mesa</label>
           <input type="text" name="company" placeholder="Ex: Apex" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500" />
@@ -288,14 +322,42 @@ if (Astro.request.method === 'POST') {
           <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Desconto</label>
           <input type="text" name="discount" placeholder="Ex: 80%" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500" />
         </div>
-        <div class="md:col-span-2 flex gap-3 items-end">
-          <div class="flex-grow">
-            <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Link Afiliado</label>
-            <input type="text" name="link" placeholder="https://..." class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500 text-blue-400" />
+        <div class="md:col-span-1">
+          <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Validade</label>
+          <input type="text" name="expiration" placeholder="Ex: 31/12" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500 text-slate-300" />
+        </div>
+        <div class="md:col-span-1">
+          <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Cor Card</label>
+          <select name="color" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500 text-slate-300">
+            <option value="blue">Blue</option>
+            <option value="indigo">Indigo</option>
+            <option value="purple">Purple</option>
+            <option value="teal">Teal</option>
+            <option value="red">Red</option>
+            <option value="cyan">Cyan</option>
+            <option value="orange">Orange</option>
+            <option value="emerald">Emerald</option>
+            <option value="fuchsia">Fuchsia</option>
+          </select>
+        </div>
+        <div class="md:col-span-1 flex flex-col items-center justify-center p-2 bg-slate-900 rounded border border-slate-800">
+          <label class="text-[9px] uppercase font-bold text-slate-600 mb-1">Destaque</label>
+          <input type="checkbox" name="featured" value="${tempId}" class="w-5 h-5 rounded border-slate-800 bg-slate-950 text-blue-600 focus:ring-blue-500" />
+        </div>
+        <div class="md:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+          <div>
+            <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Descrição</label>
+            <input type="text" name="description" placeholder="Desconto exclusivo..." class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500 text-slate-400" />
           </div>
-          <button type="button" onclick="this.parentElement.parentElement.remove()" class="bg-red-900/20 text-red-500 p-2 rounded-lg hover:bg-red-900/40 transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-          </button>
+          <div class="flex gap-3 items-end">
+            <div class="flex-grow">
+              <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Link Afiliado</label>
+              <input type="text" name="link" placeholder="https://..." class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500 text-blue-400" />
+            </div>
+            <button type="button" onclick="this.parentElement.parentElement.parentElement.remove()" class="bg-red-900/20 text-red-500 p-2 rounded-lg hover:bg-red-900/40 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+          </div>
         </div>
       `;
       container.appendChild(div);

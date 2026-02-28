@@ -2,6 +2,20 @@
 import Layout from '../layouts/Layout.astro';
 import MarketSessions from '../components/MarketSessions.astro';
 import MarketPrices from '../components/MarketPrices.astro';
+import coupons from '../data/coupons.json';
+
+// Tailwind classes mapping
+const colorStyles = {
+	blue: { bg: 'bg-blue-600', text: 'text-blue-600', border: 'border-blue-600', btn: 'bg-blue-600 hover:bg-blue-700', shadow: 'shadow-blue-900/20' },
+	indigo: { bg: 'bg-indigo-600', text: 'text-indigo-600', border: 'border-indigo-600', btn: 'bg-indigo-600 hover:bg-indigo-700', shadow: 'shadow-indigo-900/20' },
+	purple: { bg: 'bg-purple-600', text: 'text-purple-600', border: 'border-purple-600', btn: 'bg-purple-600 hover:bg-purple-700', shadow: 'shadow-purple-900/20' },
+	teal: { bg: 'bg-teal-600', text: 'text-teal-600', border: 'border-teal-600', btn: 'bg-teal-600 hover:bg-teal-700', shadow: 'shadow-teal-900/20' },
+	red: { bg: 'bg-red-600', text: 'text-red-600', border: 'border-red-600', btn: 'bg-red-600 hover:bg-red-700', shadow: 'shadow-red-900/20' },
+	cyan: { bg: 'bg-cyan-600', text: 'text-cyan-600', border: 'border-cyan-600', btn: 'bg-cyan-600 hover:bg-cyan-700', shadow: 'shadow-cyan-900/20' },
+	orange: { bg: 'bg-orange-500', text: 'text-orange-500', border: 'border-orange-500', btn: 'bg-orange-500 hover:bg-orange-600', shadow: 'shadow-orange-900/20' },
+	emerald: { bg: 'bg-emerald-600', text: 'text-emerald-600', border: 'border-emerald-600', btn: 'bg-emerald-600 hover:bg-emerald-700', shadow: 'shadow-emerald-900/20' },
+	fuchsia: { bg: 'bg-fuchsia-600', text: 'text-fuchsia-600', border: 'border-fuchsia-600', btn: 'bg-fuchsia-600 hover:bg-fuchsia-700', shadow: 'shadow-fuchsia-900/20' }
+};
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
@@ -45,83 +59,37 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 			</div>
 
 			<div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-				<!-- Coupon Card 1 -->
-				<div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-transform hover:-translate-y-1 hover:shadow-2xl">
-					<div class="h-2 bg-blue-600"></div>
-					<div class="p-8">
-						<div class="flex justify-between items-start mb-4">
-							<h3 class="text-2xl font-bold text-gray-900">FTMO</h3>
-							<span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
-								10% OFF
-							</span>
+				{coupons.filter(c => c.featured).slice(0, 3).map((coupon) => {
+					const style = colorStyles[coupon.color || 'blue'] || colorStyles.blue;
+					return (
+						<div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-transform hover:-translate-y-1 hover:shadow-2xl">
+							<div class={`h-2 ${style.bg}`}></div>
+							<div class="p-8">
+								<div class="flex justify-between items-start mb-4 gap-4">
+									<h3 class="text-2xl font-bold text-gray-900 leading-tight">{coupon.company}</h3>
+									<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 whitespace-nowrap flex-shrink-0 shadow-sm border border-green-200">
+										{coupon.discount} OFF
+									</span>
+								</div>
+								<p class="text-gray-500 mb-6 font-medium">{coupon.description || 'Desconto exclusivo para seguidores do Amazing Pro Traders.'}</p>
+								<div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between border border-gray-200 border-dashed">
+									<code class={`text-lg font-mono font-bold ${style.text}`}>{coupon.code}</code>
+									<button class="text-gray-400 hover:text-blue-600 focus:outline-none transition-colors" title="Copiar cupom">
+										<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+										</svg>
+									</button>
+								</div>
+								<p class="text-xs text-gray-400 mt-3 text-center">
+									Válido até: <span class={coupon.expiration ? "text-red-500 font-medium" : "text-gray-400"}>{coupon.expiration || "Indeterminado"}</span>
+								</p>
+								<a href={coupon.link} target="_blank" rel="noopener noreferrer" class={`mt-4 w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white ${style.btn}`}>
+									Pegar Desconto
+								</a>
+							</div>
 						</div>
-						<p class="text-gray-500 mb-6">Melhor avaliação clássica para Forex. Sem limite de tempo.</p>
-						<div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between border border-gray-200 border-dashed">
-							<code class="text-lg font-mono font-bold text-blue-600">PROPFIRMSBR10</code>
-							<button class="text-gray-400 hover:text-blue-600 focus:outline-none transition-colors" title="Copiar cupom">
-								<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-								</svg>
-							</button>
-						</div>
-						<p class="text-xs text-gray-400 mt-3 text-center">Válido até: Indeterminado</p>
-						<a href="https://ftmo.com/pt/?affiliates=SEU_CODIGO" target="_blank" rel="noopener noreferrer" class="mt-4 w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
-							Pegar Desconto
-						</a>
-					</div>
-				</div>
-
-				<!-- Coupon Card 2 -->
-				<div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-transform hover:-translate-y-1 hover:shadow-2xl">
-					<div class="h-2 bg-indigo-600"></div>
-					<div class="p-8">
-						<div class="flex justify-between items-start mb-4">
-							<h3 class="text-2xl font-bold text-gray-900">Topstep</h3>
-							<span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
-								20% OFF
-							</span>
-						</div>
-						<p class="text-gray-500 mb-6">Ideal para traders de futuros. Regras simples e saques rápidos.</p>
-						<div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between border border-gray-200 border-dashed">
-							<code class="text-lg font-mono font-bold text-indigo-600">TOPFUTURES20</code>
-							<button class="text-gray-400 hover:text-indigo-600 focus:outline-none transition-colors" title="Copiar cupom">
-								<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-								</svg>
-							</button>
-						</div>
-						<p class="text-xs text-gray-400 mt-3 text-center">Válido até: 31/12/2026</p>
-						<a href="https://app.topstep.com/refer/SEU_CODIGO" target="_blank" rel="noopener noreferrer" class="mt-4 w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
-							Pegar Desconto
-						</a>
-					</div>
-				</div>
-
-				<!-- Coupon Card 3 -->
-				<div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-transform hover:-translate-y-1 hover:shadow-2xl">
-					<div class="h-2 bg-purple-600"></div>
-					<div class="p-8">
-						<div class="flex justify-between items-start mb-4">
-							<h3 class="text-2xl font-bold text-gray-900">Apex Trader</h3>
-							<span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-red-100 text-red-800">
-								50% OFF
-							</span>
-						</div>
-						<p class="text-gray-500 mb-6">Contas múltiplas com trailing drawdown. Promoção limitada.</p>
-						<div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between border border-gray-200 border-dashed">
-							<code class="text-lg font-mono font-bold text-purple-600">APEX50BR</code>
-							<button class="text-gray-400 hover:text-purple-600 focus:outline-none transition-colors" title="Copiar cupom">
-								<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-								</svg>
-							</button>
-						</div>
-						<p class="text-xs text-red-500 font-medium mt-3 text-center">Válido até: 15/05/2026 (Promo!)</p>
-						<a href="https://apextraderfunding.com/member/aff/go/SEU_CODIGO" target="_blank" rel="noopener noreferrer" class="mt-4 w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700">
-							Pegar Desconto
-						</a>
-					</div>
-				</div>
+					);
+				})}
 			</div>
 
 			<div class="mt-12 text-center">
