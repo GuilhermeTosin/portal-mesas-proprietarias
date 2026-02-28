@@ -1,11 +1,10 @@
-// @ts-check
 import { defineConfig } from 'astro/config';
+import tailwind from '@astrojs/tailwind';
 
-import tailwindcss from '@tailwindcss/vite';
-
-// https://astro.build/config
 export default defineConfig({
-  vite: {
-    plugins: [tailwindcss()]
-  }
+  // O link oficial do seu site no GitHub Pages
+  site: 'https://guilhermetosin.github.io',
+  // O nome exato do seu repositório no GitHub (deve começar com barra)
+  base: '/portal-mesas-proprietarias',
+  integrations: [tailwind()],
 });
