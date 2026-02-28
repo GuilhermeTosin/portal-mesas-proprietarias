@@ -1,0 +1,288 @@
+---
+// src/components/MarketSessions.astro
+import holidaysData from '../data/holidays.json';
+---
+
+<div class="market-sessions-container w-full max-w-5xl mx-auto mb-12" id="market-sessions-widget" data-holidays={JSON.stringify(holidaysData)}>
+  <div class="flex items-center justify-between mb-6 px-2">
+    <h3 class="text-xl font-bold flex items-center gap-2 text-gray-900">
+      <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      Sessões do Mercado Global
+    </h3>
+    <div class="flex items-center gap-3">
+      <button id="tz-toggle" class="text-xs bg-white hover:bg-gray-100 text-gray-700 font-medium px-3 py-1.5 rounded-full border border-gray-300 transition-colors shadow-sm hidden sm:flex items-center gap-1">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+        <span id="tz-label">Horário de Brasília</span>
+      </button>
+      <div class="text-xs text-gray-500 font-mono bg-white px-3 py-1 rounded-full border border-gray-200 hidden sm:block shadow-sm" id="current-user-time">
+        Carregando...
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    
+    <!-- Sydney -->
+    <div class="session-card bg-gray-900/80 backdrop-blur-md border border-gray-700/50 rounded-xl p-5 shadow-lg relative overflow-hidden group transition-all duration-300 hover:border-gray-500/50 hover:-translate-y-1" data-session="sydney">
+      <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
+      <div class="flex justify-between items-start mb-4 relative z-10">
+        <div class="flex items-center gap-3">
+          <h4 class="font-bold text-gray-100">Sydney</h4>
+        </div>
+        <div class="session-status px-2 py-1 rounded text-xs font-bold leading-none bg-gray-800 text-gray-400 border border-gray-700">
+          --
+        </div>
+      </div>
+      <div class="space-y-2 text-sm relative z-10">
+        <div class="flex justify-between border-b border-gray-700/50 pb-1">
+          <span class="text-gray-400">Abertura:</span>
+          <span class="text-gray-200 font-medium session-open">--:--</span>
+        </div>
+        <div class="flex justify-between pb-1">
+          <span class="text-gray-400">Fechamento:</span>
+          <span class="text-gray-200 font-medium session-close">--:--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tokyo -->
+    <div class="session-card bg-gray-900/80 backdrop-blur-md border border-gray-700/50 rounded-xl p-5 shadow-lg relative overflow-hidden group transition-all duration-300 hover:border-gray-500/50 hover:-translate-y-1" data-session="tokyo">
+      <div class="absolute -right-6 -top-6 w-24 h-24 bg-red-500/10 rounded-full blur-2xl group-hover:bg-red-500/20 transition-all"></div>
+      <div class="flex justify-between items-start mb-4 relative z-10">
+        <div class="flex items-center gap-3">
+          <h4 class="font-bold text-gray-100">Tóquio</h4>
+        </div>
+        <div class="session-status px-2 py-1 rounded text-xs font-bold leading-none bg-gray-800 text-gray-400 border border-gray-700">
+          --
+        </div>
+      </div>
+      <div class="space-y-2 text-sm relative z-10">
+        <div class="flex justify-between border-b border-gray-700/50 pb-1">
+          <span class="text-gray-400">Abertura:</span>
+          <span class="text-gray-200 font-medium session-open">--:--</span>
+        </div>
+        <div class="flex justify-between pb-1">
+          <span class="text-gray-400">Fechamento:</span>
+          <span class="text-gray-200 font-medium session-close">--:--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- London -->
+    <div class="session-card bg-gray-900/80 backdrop-blur-md border border-gray-700/50 rounded-xl p-5 shadow-lg relative overflow-hidden group transition-all duration-300 hover:border-gray-500/50 hover:-translate-y-1" data-session="london">
+      <div class="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
+      <div class="flex justify-between items-start mb-4 relative z-10">
+        <div class="flex items-center gap-3">
+          <h4 class="font-bold text-gray-100">Londres</h4>
+        </div>
+        <div class="session-status px-2 py-1 rounded text-xs font-bold leading-none bg-gray-800 text-gray-400 border border-gray-700">
+          --
+        </div>
+      </div>
+      <div class="space-y-2 text-sm relative z-10">
+        <div class="flex justify-between border-b border-gray-700/50 pb-1">
+          <span class="text-gray-400">Abertura:</span>
+          <span class="text-gray-200 font-medium session-open">--:--</span>
+        </div>
+        <div class="flex justify-between pb-1">
+          <span class="text-gray-400">Fechamento:</span>
+          <span class="text-gray-200 font-medium session-close">--:--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- New York -->
+    <div class="session-card bg-gray-900/80 backdrop-blur-md border border-gray-700/50 rounded-xl p-5 shadow-lg relative overflow-hidden group transition-all duration-300 hover:border-gray-500/50 hover:-translate-y-1" data-session="newyork">
+      <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/10 rounded-full blur-2xl group-hover:bg-green-500/20 transition-all"></div>
+      <div class="flex justify-between items-start mb-4 relative z-10">
+        <div class="flex items-center gap-3">
+          <h4 class="font-bold text-gray-100">Nova York</h4>
+        </div>
+        <div class="session-status px-2 py-1 rounded text-xs font-bold leading-none bg-gray-800 text-gray-400 border border-gray-700">
+          --
+        </div>
+      </div>
+      <div class="space-y-2 text-sm relative z-10">
+        <div class="flex justify-between border-b border-gray-700/50 pb-1">
+          <span class="text-gray-400">Abertura:</span>
+          <span class="text-gray-200 font-medium session-open">--:--</span>
+        </div>
+        <div class="flex justify-between pb-1">
+          <span class="text-gray-400">Fechamento:</span>
+          <span class="text-gray-200 font-medium session-close">--:--</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Script Client-Side para lidar com as lógicas de Timezone
+  document.addEventListener('DOMContentLoaded', () => {
+    
+    // Definição das sessões usando hora UTC "Standard"
+    // Estas horas ignoram Day Light Savings para simplificação padrão (usado em forex),
+    // mas na matemática real, elas são baseadas no horário UTC.
+    // Formato: [horaAberturaUTC, horaFechamentoUTC]  (h:mm)
+    // Usando decimais para facilitar cálculos (e.g. 13.5 = 13:30)
+    
+    // London: 08:00 - 16:00 (Standard)
+    // New York: 13:00 - 22:00
+    // Sydney: 22:00 - 07:00
+    // Tokyo: 00:00 - 09:00
+
+    const sessionsData = {
+      sydney: { startHourUtc: 22, endHourUtc: 7 }, // Cruza a meia noite
+      tokyo: { startHourUtc: 0, endHourUtc: 9 },
+      london: { startHourUtc: 8, endHourUtc: 16 },
+      newyork: { startHourUtc: 13, endHourUtc: 22 }
+    };
+
+    // State
+    const timezones = {
+      brt: { id: 'America/Sao_Paulo', label: 'Horário de Brasília' },
+      ny: { id: 'America/New_York', label: 'Horário de Nova York' }
+    };
+    let currentTzKey = 'brt';
+
+    // Toggle logic
+    const toggleBtn = document.getElementById('tz-toggle');
+    const toggleLabel = document.getElementById('tz-label');
+    
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        currentTzKey = currentTzKey === 'brt' ? 'ny' : 'brt';
+        if (toggleLabel) {
+          toggleLabel.textContent = timezones[currentTzKey].label;
+        }
+        updateSessions(); // force immediate re-render of times
+      });
+    }
+
+    // Parse Holidays
+    const widgetEl = document.getElementById('market-sessions-widget');
+    const holidays = widgetEl ? JSON.parse(widgetEl.dataset.holidays || '[]') : [];
+
+    const updateSessions = () => {
+      const now = new Date();
+      
+      // We format today's date checking NY timezone explicitly since US holidays are based on local date
+      const nyDateStr = new Intl.DateTimeFormat('en-CA', { 
+        timeZone: 'America/New_York', 
+        year: 'numeric', month: '2-digit', day: '2-digit' 
+      }).format(now); // Output format: YYYY-MM-DD
+
+      const currentUtcHour = now.getUTCHours() + (now.getUTCMinutes() / 60);
+      const isWeekend = now.getUTCDay() === 0 || now.getUTCDay() === 6;
+      
+      const activeTz = timezones[currentTzKey].id;
+
+      // Update Top Clock
+      const timeDisplay = document.getElementById('current-user-time');
+      if (timeDisplay) {
+        timeDisplay.textContent = new Intl.DateTimeFormat('pt-BR', { 
+            timeZone: activeTz,
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit'
+        }).format(now) + ` (${currentTzKey === 'brt' ? 'BRT' : 'NYT'})`;
+      }
+
+      // Check each session
+      Object.keys(sessionsData).forEach(sessionKey => {
+        // Clone session data so we can modify it temporarily for early closes
+        const session = { ...sessionsData[sessionKey] };
+        const card = document.querySelector(`[data-session="${sessionKey}"]`);
+        
+        if (!card) return;
+
+        const statusEl = card.querySelector('.session-status');
+        const openEl = card.querySelector('.session-open');
+        const closeEl = card.querySelector('.session-close');
+
+        // Check Holidays logic for New York
+        let holidayInfo = null;
+        if (sessionKey === 'newyork') {
+            const todayHoliday = holidays.find(h => h.date === nyDateStr);
+            if (todayHoliday) {
+                holidayInfo = todayHoliday;
+                if (holidayInfo.status === 'early_close' && holidayInfo.close_time_utc) {
+                    session.endHourUtc = holidayInfo.close_time_utc;
+                }
+            }
+        }
+
+        // Logic to check if session is open
+        let isOpen = false;
+        let isClosedHoliday = (holidayInfo && holidayInfo.status === 'closed');
+
+        if (!isWeekend && !isClosedHoliday) {
+            if (session.startHourUtc > session.endHourUtc) {
+                // Crosses midnight (e.g., Sydney 22:00 to 07:00)
+                isOpen = currentUtcHour >= session.startHourUtc || currentUtcHour < session.endHourUtc;
+            } else {
+                isOpen = currentUtcHour >= session.startHourUtc && currentUtcHour < session.endHourUtc;
+            }
+        }
+
+        // Apply visual status
+        if (statusEl) {
+            if (isClosedHoliday) {
+                statusEl.innerHTML = `⏸️ Feriado: ${holidayInfo.name}`;
+                statusEl.className = 'session-status px-2 py-1 rounded text-xs font-bold leading-none bg-orange-900/50 text-orange-400 border border-orange-700/50';
+                card.classList.remove('border-green-500/40', 'border-gray-700/50', 'border-yellow-500/40');
+                card.classList.add('border-orange-700/50');
+            } else if (isOpen) {
+                if (holidayInfo && holidayInfo.status === 'early_close') {
+                    statusEl.innerHTML = '⚠️ Fechamento Antecipado';
+                    statusEl.className = 'session-status px-2 py-1 rounded text-xs font-bold leading-none bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 shadow-[0_0_10px_rgba(234,179,8,0.2)]';
+                    card.classList.remove('border-green-500/40', 'border-gray-700/50', 'border-orange-700/50');
+                    card.classList.add('border-yellow-500/40');
+                } else {
+                    statusEl.innerHTML = '🟢 Aberto';
+                    statusEl.className = 'session-status px-2 py-1 rounded text-xs font-bold leading-none bg-green-500/20 text-green-400 border border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.3)]';
+                    card.classList.remove('border-gray-700/50', 'border-orange-700/50', 'border-yellow-500/40');
+                    card.classList.add('border-green-500/40');
+                }
+            } else {
+                statusEl.innerHTML = '🔴 Fechado';
+                statusEl.className = 'session-status px-2 py-1 rounded text-xs font-bold leading-none bg-gray-800 text-gray-400 border border-gray-700';
+                card.classList.remove('border-green-500/40', 'border-orange-700/50', 'border-yellow-500/40');
+                card.classList.add('border-gray-700/50');
+            }
+        }
+
+        // Format Open / Close times to the Selected Timezone
+        const formatTime = (utcHourDecimal) => {
+            const h = Math.floor(utcHourDecimal);
+            const m = Math.round((utcHourDecimal - h) * 60);
+            
+            // Create a date object for today in UTC time with the specified hour
+            const d = new Date();
+            d.setUTCHours(h, m, 0, 0);
+
+            // Output in Target Timezone
+            return new Intl.DateTimeFormat('pt-BR', { 
+                timeZone: activeTz,
+                hour: '2-digit', 
+                minute: '2-digit' 
+            }).format(d);
+        };
+
+        if (openEl) openEl.textContent = formatTime(session.startHourUtc);
+        if (closeEl) closeEl.textContent = formatTime(session.endHourUtc);
+
+      });
+    };
+
+    // Initial call
+    updateSessions();
+
+    // Update every second
+    setInterval(updateSessions, 1000);
+
+  });
+</script>

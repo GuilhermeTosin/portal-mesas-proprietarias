@@ -1,0 +1,90 @@
+---
+// src/components/MarketPrices.astro
+
+async function fetchMarketData(symbol: string) {
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1d&interval=1d`;
+    // Disativamos o cache para pegar a cotação ao vivo a cada build ou SSR request
+    const response = await fetch(url, { headers: { "Cache-Control": "no-cache" } });
+    if (!response.ok) throw new Error("Fetch falhou");
+    
+    const data = await response.json();
+    const result = data.chart?.result?.[0];
+    if (!result) throw new Error("Formato inválido");
+
+    const meta = result.meta;
+    const quote = result.indicators?.quote?.[0];
+    
+    // Procura o primeiro valor de abertura não-nulo do dia
+    const openArray = quote?.open || [];
+    const openPrice = openArray.find((v: number | null) => v !== null) || meta.regularMarketPrice;
+
+    return {
+      open: openPrice,
+      close: meta.regularMarketPrice,
+      previousClose: meta.previousClose
+    };
+  } catch (error) {
+    console.error(`Erro buscando ${symbol}:`, error);
+    return null;
+  }
+}
+
+const spxData = await fetchMarketData("ES=F");
+const nasdaqData = await fetchMarketData("NQ=F");
+
+const formatPrice = (price: number | undefined | null) => {
+  if (price === undefined || price === null) return "---";
+  return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+---
+
+<div class="w-full max-w-5xl mx-auto my-8 px-4 sm:px-6 lg:px-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+    <!-- S&P 500 (ES=F) -->
+    <div class="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col items-center justify-center text-center transition-transform hover:-translate-y-1 hover:shadow-lg">
+      <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+        S&P 500 Futuros
+      </h3>
+      <div class="space-y-3 w-full max-w-xs">
+        <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+          <span class="text-gray-500 font-medium">Abertura</span>
+          <span class="text-lg font-mono font-bold text-gray-800">{formatPrice(spxData?.open)}</span>
+        </div>
+        <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+          <span class="text-gray-500 font-medium">Fechamento</span>
+          <span class="text-lg font-mono font-bold text-blue-600">{formatPrice(spxData?.close)}</span>
+        </div>
+        <div class="flex justify-between items-center pb-1">
+          <span class="text-gray-500 font-medium">Ajuste</span>
+          <span class="text-lg font-mono font-bold text-gray-600">{formatPrice(spxData?.previousClose)}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Nasdaq 100 (NQ=F) -->
+    <div class="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col items-center justify-center text-center transition-transform hover:-translate-y-1 hover:shadow-lg">
+      <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+        Nasdaq 100 Futuros
+      </h3>
+      <div class="space-y-3 w-full max-w-xs">
+        <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+          <span class="text-gray-500 font-medium">Abertura</span>
+          <span class="text-lg font-mono font-bold text-gray-800">{formatPrice(nasdaqData?.open)}</span>
+        </div>
+        <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+          <span class="text-gray-500 font-medium">Fechamento</span>
+          <span class="text-lg font-mono font-bold text-blue-600">{formatPrice(nasdaqData?.close)}</span>
+        </div>
+        <div class="flex justify-between items-center pb-1">
+          <span class="text-gray-500 font-medium">Ajuste</span>
+          <span class="text-lg font-mono font-bold text-gray-600">{formatPrice(nasdaqData?.previousClose)}</span>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>

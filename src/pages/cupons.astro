@@ -1,0 +1,110 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Você pode editar essas propriedades mais tarde com as informações reais das empresas.
+const firms = [
+  { name: 'FTMO', discount: '10% OFF', color: 'blue', code: 'PROPFIRMSBR10', description: 'Melhor avaliação clássica para Forex. Sem limite de tempo.', link: 'https://ftmo.com/pt/?affiliates=SEU_CODIGO', expiration: 'Indeterminado' },
+  { name: 'Topstep', discount: '20% OFF', color: 'indigo', code: 'TOPFUTURES20', description: 'Ideal para traders de futuros. Regras simples e saques rápidos.', link: 'https://app.topstep.com/refer/SEU_CODIGO', expiration: '31/12/2026' },
+  { name: 'Apex Trader', discount: '50% OFF', color: 'purple', code: 'APEX50BR', description: 'Contas múltiplas com trailing drawdown. Promoção limitada.', link: 'https://apextraderfunding.com/member/aff/go/SEU_CODIGO', expiration: '15/05/2026' },
+  { name: 'Funding Pips', discount: '5% OFF', color: 'teal', code: 'PIPS5', description: 'Mesa especializada em Forex e Cripto com regras baseadas em saldo.', link: 'https://app.fundingpips.com/register?ref=SEU_CODIGO', expiration: 'Indeterminado' },
+  { name: 'MyFundedFX', discount: '10% OFF', color: 'red', code: 'MFFX10', description: 'Excelentes opções de plataformas de trading, com regras menos restritivas.', link: 'https://myfundedfx.tech/purchasechallenge/?coupon=SEU_CODIGO', expiration: '31/12/2026' },
+  { name: 'The Funded Trader', discount: '15% OFF', color: 'cyan', code: 'TFT15', description: 'Desafios clássicos, rápidos e padronizados para o mercado global.', link: 'https://dashboard.thefundedtraderprogram.com/purchasechallenge/?aff=SEU_CODIGO', expiration: 'Indeterminado' },
+  { name: 'Bulenox', discount: '60% OFF', color: 'orange', code: 'BULENOX60', description: 'Promoções extremamente agressivas para operar futuros CME.', link: 'https://bulenox.com/member/aff/go/SEU_CODIGO', expiration: '30/06/2026' },
+  { name: 'TradeDay', discount: '20% OFF', color: 'emerald', code: 'TRADEDAY20', description: 'Mesa de futuros com drawdown End of Day (EOD) no estágio inicial.', link: 'https://tradeday.com/?aff=SEU_CODIGO', expiration: 'Indeterminado' },
+  { name: 'Elite Trader', discount: '30% OFF', color: 'fuchsia', code: 'ELITE30', description: 'Condições excelentes de repasse de lucros após a aprovação.', link: 'https://elitetraderfunding.com/?ref=SEU_CODIGO', expiration: '31/12/2026' }
+];
+
+// Tailwind classes mapping para garantir que a coloração dinâmica não seja expurgada pelo PurgeCSS
+const colorStyles = {
+	blue: { bg: 'bg-blue-600', text: 'text-blue-600', hoverInfo: 'hover:text-blue-600', btnBg: 'bg-blue-600', btnHover: 'hover:bg-blue-700' },
+	indigo: { bg: 'bg-indigo-600', text: 'text-indigo-600', hoverInfo: 'hover:text-indigo-600', btnBg: 'bg-indigo-600', btnHover: 'hover:bg-indigo-700' },
+	purple: { bg: 'bg-purple-600', text: 'text-purple-600', hoverInfo: 'hover:text-purple-600', btnBg: 'bg-purple-600', btnHover: 'hover:bg-purple-700' },
+	teal: { bg: 'bg-teal-600', text: 'text-teal-600', hoverInfo: 'hover:text-teal-600', btnBg: 'bg-teal-600', btnHover: 'hover:bg-teal-700' },
+	red: { bg: 'bg-red-600', text: 'text-red-600', hoverInfo: 'hover:text-red-600', btnBg: 'bg-red-600', btnHover: 'hover:bg-red-700' },
+	cyan: { bg: 'bg-cyan-600', text: 'text-cyan-600', hoverInfo: 'hover:text-cyan-600', btnBg: 'bg-cyan-600', btnHover: 'hover:bg-cyan-700' },
+	orange: { bg: 'bg-orange-500', text: 'text-orange-500', hoverInfo: 'hover:text-orange-500', btnBg: 'bg-orange-500', btnHover: 'hover:bg-orange-600' },
+	emerald: { bg: 'bg-emerald-600', text: 'text-emerald-600', hoverInfo: 'hover:text-emerald-600', btnBg: 'bg-emerald-600', btnHover: 'hover:bg-emerald-700' },
+	fuchsia: { bg: 'bg-fuchsia-600', text: 'text-fuchsia-600', hoverInfo: 'hover:text-fuchsia-600', btnBg: 'bg-fuchsia-600', btnHover: 'hover:bg-fuchsia-700' }
+};
+---
+
+<Layout title="Todos os Cupons" description="Cupons de desconto exclusivos para as principais mesas proprietárias da indústria.">
+	<div class="bg-gray-50 py-12 sm:py-20 lg:py-24 min-h-screen">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="text-center max-w-3xl mx-auto mb-16">
+				<h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
+					Todos os <span class="text-blue-600">Cupons de Desconto</span>
+				</h1>
+				<p class="text-lg text-gray-500">
+					Acesse nossa lista completa de promoções e economize na compra do seu próximo teste de avaliação em mesas proprietárias de Forex e Futuros.
+				</p>
+			</div>
+
+			<div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+				{firms.map((firm) => {
+					// Puxa as cores de acordo com a predefinição mapeada para evitar que o tailwind não injete as classes
+					const c = colorStyles[firm.color as keyof typeof colorStyles];
+
+					return (
+						<div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex flex-col transition-transform hover:-translate-y-1 hover:shadow-xl">
+							<div class={`h-2 ${c.bg}`}></div>
+							<div class="p-8 flex-1 flex flex-col">
+								<div class="flex justify-between items-start mb-4">
+									<h3 class="text-2xl font-bold text-gray-900">{firm.name}</h3>
+									<span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+										{firm.discount}
+									</span>
+								</div>
+								<p class="text-gray-500 mb-6 flex-1">{firm.description}</p>
+								
+								<div class="mt-auto">
+									<div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between border border-gray-200 border-dashed">
+										<code class={`text-lg font-mono font-bold ${c.text}`}>{firm.code}</code>
+										<button class={`text-gray-400 focus:outline-none transition-colors ${c.hoverInfo}`} title="Copiar cupom">
+											<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+											</svg>
+										</button>
+									</div>
+									<p class={`text-xs font-medium mt-3 text-center ${firm.expiration === 'Indeterminado' ? 'text-gray-400' : 'text-red-500'}`}>
+										Válido até: {firm.expiration}
+									</p>
+									<a href={firm.link} target="_blank" rel="noopener noreferrer" class={`mt-4 w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white ${c.btnBg} ${c.btnHover}`}>
+										Pegar Desconto
+									</a>
+								</div>
+							</div>
+						</div>
+					);
+				})}
+			</div>
+		</div>
+	</div>
+
+	<!-- Mesma lógica de cópia da Home -->
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const copyButtons = document.querySelectorAll('button[title="Copiar cupom"]');
+			
+			copyButtons.forEach(button => {
+				button.addEventListener('click', async () => {
+					const codeElement = button.parentElement?.querySelector('code');
+					if (codeElement && codeElement.textContent) {
+						try {
+							await navigator.clipboard.writeText(codeElement.textContent);
+							
+							const originalHTML = button.innerHTML;
+							button.innerHTML = `<svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+							
+							setTimeout(() => {
+								button.innerHTML = originalHTML;
+							}, 2000);
+						} catch (err) {
+							console.error('Falha ao copiar:', err);
+						}
+					}
+				});
+			});
+		});
+	</script>
+</Layout>

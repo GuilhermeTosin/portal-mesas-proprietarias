@@ -1,0 +1,57 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog');
+	return posts.map(post => ({
+		params: { id: post.id },
+		props: { post },
+	}));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Layout title={post.data.title} description={post.data.description}>
+	<div class="bg-gray-50 min-h-screen py-12 lg:py-20">
+		<article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+			<!-- Header Post -->
+			<header class="text-center mb-12">
+				<div class="text-blue-600 font-semibold mb-4">
+					<time datetime={post.data.pubDate.toISOString()}>
+						{post.data.pubDate.toLocaleDateString('pt-BR', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric',
+						})}
+					</time>
+					{post.data.author && <span class="mx-2 text-gray-400">•</span>}
+					{post.data.author && <span class="text-gray-600">Por {post.data.author}</span>}
+				</div>
+				<h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-6">
+					{post.data.title}
+				</h1>
+				<p class="text-xl text-gray-500 max-w-3xl mx-auto">
+					{post.data.description}
+				</p>
+			</header>
+
+			<!-- Post Content -->
+			<div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+				<div class="px-6 py-10 sm:px-12 sm:py-16 prose prose-blue prose-lg max-w-none">
+					<Content />
+				</div>
+			</div>
+			
+			<!-- Bottom Nav -->
+			<div class="mt-12 text-center">
+				<a href="/blog" class="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition-colors">
+					<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+					Voltar para o Blog
+				</a>
+			</div>
+		</article>
+	</div>
+</Layout>

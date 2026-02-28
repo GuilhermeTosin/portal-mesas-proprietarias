@@ -1,0 +1,70 @@
+[
+  {
+    "date": "2026-01-01",
+    "status": "closed",
+    "name": "New Year's Day"
+  },
+  {
+    "date": "2026-01-19",
+    "status": "closed",
+    "name": "Martin Luther King, Jr. Day"
+  },
+  {
+    "date": "2026-02-16",
+    "status": "closed",
+    "name": "Washington's Birthday"
+  },
+  {
+    "date": "2026-04-03",
+    "status": "closed",
+    "name": "Good Friday"
+  },
+  {
+    "date": "2026-05-25",
+    "status": "closed",
+    "name": "Memorial Day"
+  },
+  {
+    "date": "2026-06-19",
+    "status": "closed",
+    "name": "Juneteenth National Independence Day"
+  },
+  {
+    "date": "2026-07-03",
+    "status": "early_close",
+    "close_time_utc": 17,
+    "name": "Day Before Independence Day"
+  },
+  {
+    "date": "2026-07-04",
+    "status": "closed",
+    "name": "Independence Day"
+  },
+  {
+    "date": "2026-09-07",
+    "status": "closed",
+    "name": "Labor Day"
+  },
+  {
+    "date": "2026-11-26",
+    "status": "closed",
+    "name": "Thanksgiving Day"
+  },
+  {
+    "date": "2026-11-27",
+    "status": "early_close",
+    "close_time_utc": 18,
+    "name": "Black Friday"
+  },
+  {
+    "date": "2026-12-24",
+    "status": "early_close",
+    "close_time_utc": 18,
+    "name": "Christmas Eve"
+  },
+  {
+    "date": "2026-12-25",
+    "status": "closed",
+    "name": "Christmas Day"
+  }
+]

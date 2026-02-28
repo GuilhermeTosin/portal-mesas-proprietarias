@@ -1,0 +1,232 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Comparativo" description="Tabela comparativa das melhores mesas proprietárias: precos, drawdown e regras.">
+	<div class="bg-gray-50 py-12 sm:py-20 lg:py-24">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="text-center max-w-3xl mx-auto mb-16">
+				<h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
+					Comparativo de <span class="text-blue-600">Mesas Proprietárias</span>
+				</h1>
+				<p class="text-lg text-gray-500">
+					Analise as regras lado a lado e descubra qual financiamento se encaixa melhor no seu plano de trade. Dados baseados em contas de aprox. $100K.
+				</p>
+			</div>
+
+			<!-- Comparison Table Container -->
+			<div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+				<div class="overflow-x-auto">
+					<table class="min-w-full divide-y divide-gray-200">
+						<thead class="bg-gray-50">
+							<tr>
+								<th scope="col" class="py-5 px-6 text-left text-sm font-semibold text-gray-900 uppercase tracking-wider">
+									Prop Firm
+								</th>
+								<th scope="col" class="py-5 px-6 text-center text-sm font-semibold text-gray-900 uppercase tracking-wider">
+									Preço ($100k)
+								</th>
+								<th scope="col" class="py-5 px-6 text-center text-sm font-semibold text-gray-900 uppercase tracking-wider">
+									Fases
+								</th>
+								<th scope="col" class="py-5 px-6 text-center text-sm font-semibold text-gray-900 uppercase tracking-wider">
+									Meta de Lucro
+								</th>
+								<th scope="col" class="py-5 px-6 text-center text-sm font-semibold text-gray-900 uppercase tracking-wider">
+									Max Drawdown
+								</th>
+								<th scope="col" class="py-5 px-6 text-center text-sm font-semibold text-gray-900 uppercase tracking-wider">
+									Daily Drawdown
+								</th>
+								<th scope="col" class="py-5 px-6 text-center text-sm font-semibold text-gray-900 uppercase tracking-wider">
+									Repasse (Split)
+								</th>
+							</tr>
+						</thead>
+						<tbody class="bg-white divide-y divide-gray-200">
+							<!-- Row 1: FTMO -->
+							<tr class="hover:bg-blue-50/50 transition-colors">
+								<td class="py-6 px-6 whitespace-nowrap">
+									<div class="flex items-center">
+										<div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-lg flex justify-center items-center font-bold text-blue-700">
+											FT
+										</div>
+										<div class="ml-4">
+											<div class="text-sm font-bold text-gray-900">FTMO</div>
+											<div class="text-xs text-gray-500">Forex/CFDs</div>
+										</div>
+									</div>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center">
+									<div class="text-sm font-bold text-gray-900">€540</div>
+									<div class="text-xs text-green-600 font-medium">Reembolsável</div>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm font-medium text-gray-700">
+									2 Fases
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm text-gray-700">
+									<span class="block">F1: 10% ($10k)</span>
+									<span class="block text-gray-500">F2: 5% ($5k)</span>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm text-gray-700">
+									10% ($10,000)
+									<span class="block text-xs text-gray-500">Estático Inicial</span>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm text-gray-700">
+									5% ($5,000)
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center">
+									<span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+										80% - 90%
+									</span>
+								</td>
+							</tr>
+
+							<!-- Row 2: Topstep -->
+							<tr class="hover:bg-blue-50/50 transition-colors">
+								<td class="py-6 px-6 whitespace-nowrap">
+									<div class="flex items-center">
+										<div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-lg flex justify-center items-center font-bold text-indigo-700">
+											TS
+										</div>
+										<div class="ml-4">
+											<div class="text-sm font-bold text-gray-900">Topstep</div>
+											<div class="text-xs text-gray-500">Futuros (CME)</div>
+										</div>
+									</div>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center">
+									<div class="text-sm font-bold text-gray-900">$99 /mês</div>
+									<div class="text-xs text-gray-500">Até passar</div>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm font-medium text-gray-700">
+									1 Fase
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm text-gray-700">
+									6% ($6,000)
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm text-gray-700">
+									3% ($3,000)
+									<span class="block text-xs text-orange-500 font-medium">Trailing EOD</span>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm text-gray-700">
+									2% ($2,000)
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center">
+									<span class="block px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+										100% primeiros $10k
+									</span>
+									<span class="block text-xs text-gray-500 mt-1">Depois 90%</span>
+								</td>
+							</tr>
+
+							<!-- Row 3: Apex Trader -->
+							<tr class="hover:bg-blue-50/50 transition-colors">
+								<td class="py-6 px-6 whitespace-nowrap">
+									<div class="flex items-center">
+										<div class="flex-shrink-0 h-10 w-10 bg-purple-100 rounded-lg flex justify-center items-center font-bold text-purple-700">
+											AP
+										</div>
+										<div class="ml-4">
+											<div class="text-sm font-bold text-gray-900">Apex Trader</div>
+											<div class="text-xs text-gray-500">Futuros (CME)</div>
+										</div>
+									</div>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center">
+									<div class="text-sm font-bold text-gray-900">$207 /mês</div>
+									<div class="text-xs text-gray-500">Frequentes promoções</div>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm font-medium text-gray-700">
+									1 Fase
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm text-gray-700">
+									6% ($6,000)
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm text-gray-700">
+									3% ($3,000)
+									<span class="block text-xs text-red-500 font-medium">Intraday Trailing</span>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm text-gray-700">
+									Nenhum
+									<span class="block text-xs text-gray-500">Sem limite diário</span>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center">
+									<span class="block px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+										100% primeiros $25k
+									</span>
+									<span class="block text-xs text-gray-500 mt-1">Depois 90%</span>
+								</td>
+							</tr>
+							
+							<!-- Row 4: Funding Pips -->
+							<tr class="hover:bg-blue-50/50 transition-colors">
+								<td class="py-6 px-6 whitespace-nowrap">
+									<div class="flex items-center">
+										<div class="flex-shrink-0 h-10 w-10 bg-teal-100 rounded-lg flex justify-center items-center font-bold text-teal-700">
+											FP
+										</div>
+										<div class="ml-4">
+											<div class="text-sm font-bold text-gray-900">Funding Pips</div>
+											<div class="text-xs text-gray-500">Forex/Crypto</div>
+										</div>
+									</div>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center">
+									<div class="text-sm font-bold text-gray-900">$399</div>
+									<div class="text-xs text-green-600 font-medium">Reembolsável</div>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm font-medium text-gray-700">
+									2 Fases
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm text-gray-700">
+									<span class="block">F1: 8% ($8k)</span>
+									<span class="block text-gray-500">F2: 5% ($5k)</span>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm text-gray-700">
+									10% ($10,000)
+									<span class="block text-xs text-gray-500">Balance Based</span>
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center text-sm text-gray-700">
+									5% ($5,000)
+								</td>
+								<td class="py-6 px-6 whitespace-nowrap text-center">
+									<span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+										80% - 90%
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				
+				<!-- Mobile hint -->
+				<div class="bg-gray-50 px-6 py-4 border-t border-gray-200 text-sm text-gray-500 text-center sm:hidden">
+					<p>Deslize para a direita para ver todas as colunas 👉</p>
+				</div>
+			</div>
+
+			<!-- Additional Info / FAQ summary -->
+			<div class="mt-16 grid gap-8 md:grid-cols-2">
+				<div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+					<h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+						<svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+						Drawdown Trailing vs Estático
+					</h3>
+					<p class="text-gray-600">
+						O <strong>Drawdown Estático</strong> é calculado a partir do seu saldo inicial e nunca muda. O <strong>Trailing Drawdown</strong> acompanha seu maior saldo positivo (high water mark), sendo mais rigoroso mas geralmente presente em desafios de passo único para futuros.
+					</p>
+				</div>
+				<div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+					<h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+						<svg class="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+						Reembolsos e Taxas Mensais
+					</h3>
+					<p class="text-gray-600">
+						Mesas de Forex costumam cobrar uma taxa única (One-time fee) que é devolvida no seu primeiro saque após passar. Já no mercado de futuros, o padrão é uma mensalidade (Subscription) ativa até você ser aprovado.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</Layout>

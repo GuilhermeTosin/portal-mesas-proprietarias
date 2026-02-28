@@ -1,0 +1,82 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+	frontmatter?: any;
+}
+
+const { frontmatter } = Astro.props;
+const title = Astro.props.title || frontmatter?.title || "Prop Firms";
+const description = Astro.props.description || frontmatter?.description || "Portal super rápido sobre Mesas Proprietárias (Prop Firms) de day trade.";
+---
+
+<!doctype html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title} | Mesas Proprietárias Brasil</title>
+		<meta name="description" content={description} />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	</head>
+	<body class="bg-gray-50 text-gray-900 font-['Inter',_sans-serif] antialiased flex flex-col min-h-screen">
+		<header class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="flex justify-between items-center h-16">
+					<div class="flex-shrink-0 flex items-center">
+						<a href="/" class="flex items-center gap-3">
+							<img src="/logo.png" alt="Logo Mesas Proprietárias Brasil" class="h-10 w-auto object-contain rounded-md" />
+							<span class="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-600 hidden sm:block">Mesas Proprietárias Brasil</span>
+							<span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-600 sm:hidden">MP Brasil</span>
+						</a>
+					</div>
+					<nav class="hidden md:flex space-x-8">
+						<a href="/" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Início</a>
+						<a href="/comparativo" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Comparativo</a>
+						<a href="/blog" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Blog</a>
+					</nav>
+					<div class="md:hidden flex items-center">
+						<!-- Mobile menu button -->
+						<button type="button" class="text-gray-500 hover:text-gray-600 focus:outline-none" aria-label="Menu Mobile">
+							<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+							</svg>
+						</button>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<main class="flex-grow">
+			{frontmatter ? (
+				<article class="prose prose-blue lg:prose-xl mx-auto px-4 py-12 max-w-4xl">
+					<slot />
+				</article>
+			) : (
+				<slot />
+			)}
+		</main>
+
+		<footer class="bg-gray-900 text-white mt-auto py-12">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+				<p class="text-gray-400">&copy; {new Date().getFullYear()} Portal Prop Firms BR. Todos os direitos reservados.</p>
+				<p class="text-gray-500 text-sm mt-2">Avisos legais: Negociar ou investir envolve riscos significativos.</p>
+			</div>
+		</footer>
+	</body>
+</html>
+
+<style is:global>
+	/* Subtle modern aesthetic additions */
+	::selection {
+		background-color: #3b82f6;
+		color: white;
+	}
+</style>
