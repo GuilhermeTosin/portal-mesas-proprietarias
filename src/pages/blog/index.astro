@@ -5,6 +5,8 @@ import { getCollection } from 'astro:content';
 const posts = await getCollection('blog');
 // Sort posts by date descending
 posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <Layout title="Blog" description="Últimas novidades, dicas e análises sobre Mesas Proprietárias.">
@@ -39,7 +41,7 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 								)}
 							</div>
 							<h2 class="text-2xl font-bold text-gray-900 mb-3 hover:text-blue-600 transition-colors">
-								<a href={`/blog/${post.id}`}>
+								<a href={`${base}/blog/${post.id}`}>
 									{post.data.title}
 								</a>
 							</h2>
@@ -47,7 +49,7 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 								{post.data.description}
 							</p>
 							<div class="mt-auto pt-6 border-t border-gray-100">
-								<a href={`/blog/${post.id}`} class="text-blue-600 font-semibold hover:text-blue-800 flex items-center">
+								<a href={`${base}/blog/${post.id}`} class="text-blue-600 font-semibold hover:text-blue-800 flex items-center">
 									Ler artigo completo
 									<svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
 								</a>
