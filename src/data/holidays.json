@@ -1,70 +1,150 @@
-[
-  {
-    "date": "2026-01-01",
-    "status": "closed",
-    "name": "New Year's Day"
-  },
-  {
-    "date": "2026-01-19",
-    "status": "closed",
-    "name": "Martin Luther King, Jr. Day"
-  },
-  {
-    "date": "2026-02-16",
-    "status": "closed",
-    "name": "Washington's Birthday"
-  },
-  {
-    "date": "2026-04-03",
-    "status": "closed",
-    "name": "Good Friday"
-  },
-  {
-    "date": "2026-05-25",
-    "status": "closed",
-    "name": "Memorial Day"
-  },
-  {
-    "date": "2026-06-19",
-    "status": "closed",
-    "name": "Juneteenth National Independence Day"
-  },
-  {
-    "date": "2026-07-03",
-    "status": "early_close",
-    "close_time_utc": 17,
-    "name": "Day Before Independence Day"
-  },
-  {
-    "date": "2026-07-04",
-    "status": "closed",
-    "name": "Independence Day"
-  },
-  {
-    "date": "2026-09-07",
-    "status": "closed",
-    "name": "Labor Day"
-  },
-  {
-    "date": "2026-11-26",
-    "status": "closed",
-    "name": "Thanksgiving Day"
-  },
-  {
-    "date": "2026-11-27",
-    "status": "early_close",
-    "close_time_utc": 18,
-    "name": "Black Friday"
-  },
-  {
-    "date": "2026-12-24",
-    "status": "early_close",
-    "close_time_utc": 18,
-    "name": "Christmas Eve"
-  },
-  {
-    "date": "2026-12-25",
-    "status": "closed",
-    "name": "Christmas Day"
-  }
-]
+{
+  "usa": [
+    {
+      "date": "2026-01-01",
+      "status": "closed",
+      "name": "New Year's Day"
+    },
+    {
+      "date": "2026-01-19",
+      "status": "closed",
+      "name": "Martin Luther King, Jr. Day"
+    },
+    {
+      "date": "2026-02-16",
+      "status": "closed",
+      "name": "Washington's Birthday"
+    },
+    {
+      "date": "2026-04-03",
+      "status": "closed",
+      "name": "Good Friday"
+    },
+    {
+      "date": "2026-05-25",
+      "status": "closed",
+      "name": "Memorial Day"
+    },
+    {
+      "date": "2026-06-19",
+      "status": "closed",
+      "name": "Juneteenth National Independence Day"
+    },
+    {
+      "date": "2026-07-03",
+      "status": "early_close",
+      "close_time_utc": 17,
+      "name": "Day Before Independence Day"
+    },
+    {
+      "date": "2026-07-04",
+      "status": "closed",
+      "name": "Independence Day"
+    },
+    {
+      "date": "2026-09-07",
+      "status": "closed",
+      "name": "Labor Day"
+    },
+    {
+      "date": "2026-11-26",
+      "status": "closed",
+      "name": "Thanksgiving Day"
+    },
+    {
+      "date": "2026-11-27",
+      "status": "early_close",
+      "close_time_utc": 18,
+      "name": "Black Friday"
+    },
+    {
+      "date": "2026-12-24",
+      "status": "early_close",
+      "close_time_utc": 18,
+      "name": "Christmas Eve"
+    },
+    {
+      "date": "2026-12-25",
+      "status": "closed",
+      "name": "Christmas Day"
+    }
+  ],
+  "brazil": [
+    {
+      "date": "2026-01-01",
+      "status": "closed",
+      "name": "Confraternização Universal"
+    },
+    {
+      "date": "2026-02-16",
+      "status": "closed",
+      "name": "Carnaval"
+    },
+    {
+      "date": "2026-02-17",
+      "status": "closed",
+      "name": "Carnaval"
+    },
+    {
+      "date": "2026-04-03",
+      "status": "closed",
+      "name": "Sexta-feira Santa"
+    },
+    {
+      "date": "2026-04-21",
+      "status": "closed",
+      "name": "Tiradentes"
+    },
+    {
+      "date": "2026-05-01",
+      "status": "closed",
+      "name": "Dia do Trabalho"
+    },
+    {
+      "date": "2026-06-04",
+      "status": "closed",
+      "name": "Corpus Christi"
+    },
+    {
+      "date": "2026-09-07",
+      "status": "closed",
+      "name": "Independência do Brasil"
+    },
+    {
+      "date": "2026-10-12",
+      "status": "closed",
+      "name": "Nossa Sra. Aparecida"
+    },
+    {
+      "date": "2026-11-02",
+      "status": "closed",
+      "name": "Finados"
+    },
+    {
+      "date": "2026-11-15",
+      "status": "closed",
+      "name": "Proclamação da República"
+    },
+    {
+      "date": "2026-11-20",
+      "status": "closed",
+      "name": "Dia da Consciência Negra"
+    },
+    {
+      "date": "2026-12-24",
+      "status": "early_close",
+      "close_time_utc": 14,
+      "name": "Véspera de Natal"
+    },
+    {
+      "date": "2026-12-25",
+      "status": "closed",
+      "name": "Natal"
+    },
+    {
+      "date": "2026-12-31",
+      "status": "closed",
+      "name": "Ano Novo"
+    }
+  ]
+}

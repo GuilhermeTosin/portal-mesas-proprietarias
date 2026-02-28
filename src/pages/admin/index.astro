@@ -1,0 +1,319 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
+import Layout from '../../layouts/Layout.astro';
+
+// Authentication
+const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD || 'admin123';
+const isAuthenticated = Astro.cookies.has('admin_auth') && Astro.cookies.get('admin_auth')?.value === ADMIN_PASSWORD;
+
+// Paths
+const marketDataPath = path.resolve('./src/data/market_data.json');
+const couponsPath = path.resolve('./src/data/coupons.json');
+
+// Load Data
+let marketData = JSON.parse(fs.readFileSync(marketDataPath, 'utf8'));
+let coupons = JSON.parse(fs.readFileSync(couponsPath, 'utf8'));
+
+let message = '';
+let error = '';
+
+// Handle POST Requests
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const action = formData.get('action');
+
+    console.log('[Admin] Action received:', action);
+
+    if (action === 'login') {
+      const password = formData.get('password');
+      console.log('[Admin] Login attempt with password length:', password?.length);
+      
+      if (password === ADMIN_PASSWORD) {
+        console.log('[Admin] Login successful, setting cookie');
+        Astro.cookies.set('admin_auth', ADMIN_PASSWORD, { path: '/', httpOnly: true });
+        return Astro.redirect('/admin');
+      } else {
+        console.warn('[Admin] Login failed: Incorrect password');
+        error = 'Senha incorreta';
+      }
+    }
+
+    if (!isAuthenticated && action !== 'login') {
+      console.warn('[Admin] Unauthorized action attempt:', action);
+      return Astro.redirect('/admin');
+    }
+
+    if (action === 'save_settlement') {
+      const spx = parseFloat(formData.get('spx'));
+      const nasdaq = parseFloat(formData.get('nasdaq'));
+      
+      marketData.settlement.spx = spx;
+      marketData.settlement.nasdaq = nasdaq;
+      marketData.settlement.updatedAt = new Date().toISOString();
+      
+      fs.writeFileSync(marketDataPath, JSON.stringify(marketData, null, 2));
+      message = 'Ajustes salvos com sucesso!';
+    }
+
+    if (action === 'save_coupons') {
+      const couponIds = formData.getAll('id');
+      const companies = formData.getAll('company');
+      const codes = formData.getAll('code');
+      const discounts = formData.getAll('discount');
+      const links = formData.getAll('link');
+
+      const newCoupons = couponIds.map((id, i) => ({
+        id: id || Date.now().toString() + i,
+        company: companies[i],
+        code: codes[i],
+        discount: discounts[i],
+        link: links[i]
+      }));
+
+      fs.writeFileSync(couponsPath, JSON.stringify(newCoupons, null, 2));
+      coupons = newCoupons;
+      message = 'Cupons atualizados com sucesso!';
+    }
+
+    if (action === 'deploy') {
+      try {
+        console.log('Iniciando deploy manual...');
+        execSync('git add .');
+        execSync('git commit -m "chore: manual update via admin dashboard"');
+        execSync('git push');
+        message = 'Deploy realizado com sucesso! O site será atualizado em instantes.';
+      } catch (e) {
+        error = 'Erro ao realizar deploy: ' + e.message;
+      }
+    }
+  } catch (e) {
+    error = 'Erro no processamento: ' + e.message;
+  }
+}
+---
+
+<Layout title="Admin Dashboard - Amazing Pro Traders">
+  <main class="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans">
+    <div class="max-w-4xl mx-auto">
+      
+      {!isAuthenticated ? (
+        <div class="flex items-center justify-center min-h-[60vh]">
+          <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl w-full max-w-md">
+            <h1 class="text-2xl font-bold mb-6 text-center text-white">Acesso Restrito</h1>
+            <form method="POST" class="space-y-4">
+              <input type="hidden" name="action" value="login" />
+              <div>
+                <label class="block text-sm font-medium mb-1 text-slate-400">Senha Admin</label>
+                <input 
+                  type="password" 
+                  name="password" 
+                  class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  placeholder="Digite sua senha..."
+                  required
+                />
+              </div>
+              {error && <p class="text-red-500 text-sm">{error}</p>}
+              <button class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition-colors shadow-lg shadow-blue-900/20">
+                Entrar Dashboard
+              </button>
+            </form>
+          </div>
+        </div>
+      ) : (
+        <div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div>
+              <h1 class="text-3xl font-bold text-white tracking-tight">Dashboard Administrativa</h1>
+              <p class="text-slate-500">Amazing Pro Traders Portal</p>
+            </div>
+            
+            <form method="POST">
+              <input type="hidden" name="action" value="deploy" />
+              <button class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-emerald-900/30 active:scale-95 group">
+                <svg class="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                Enviar para o Site Oficial
+              </button>
+            </form>
+          </header>
+
+          {message && (
+            <div class="bg-emerald-900/20 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl flex items-center gap-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              {message}
+            </div>
+          )}
+          
+          {error && (
+             <div class="bg-red-900/20 border border-red-500/30 text-red-400 p-4 rounded-xl flex items-center gap-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              {error}
+            </div>
+          )}
+
+          <div class="grid md:grid-cols-2 gap-8">
+            <!-- Settlement Section -->
+            <section class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 shadow-xl backdrop-blur-sm">
+              <h2 class="text-xl font-bold mb-6 flex items-center gap-2 text-white">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                Gerenciar Ajustes (Settlement)
+              </h2>
+              <form method="POST" class="space-y-4">
+                <input type="hidden" name="action" value="save_settlement" />
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">S&P 500 (ES)</label>
+                    <input 
+                      type="number" 
+                      step="0.25" 
+                      name="spx" 
+                      value={marketData.settlement.spx}
+                      class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:border-blue-500 outline-none transition-all font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">NASDAQ (NQ)</label>
+                    <input 
+                      type="number" 
+                      step="0.25" 
+                      name="nasdaq" 
+                      value={marketData.settlement.nasdaq}
+                      class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:border-blue-500 outline-none transition-all font-mono"
+                    />
+                  </div>
+                </div>
+                <button class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-bold transition-colors w-full">
+                  Salvar Ajustes
+                </button>
+              </form>
+            </section>
+
+            <!-- Quick Stats/Info -->
+            <section class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 shadow-xl backdrop-blur-sm">
+              <h2 class="text-xl font-bold mb-4 text-white">Resumo do Sistema</h2>
+              <div class="space-y-4 text-sm">
+                <div class="flex justify-between py-2 border-b border-slate-800">
+                  <span class="text-slate-500">Última atualização (Auto)</span>
+                  <span class="text-slate-300 font-mono">{new Date(marketData.settlement.updatedAt).toLocaleTimeString()}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-800">
+                  <span class="text-slate-500">Cupons Ativos</span>
+                  <span class="text-slate-300 font-mono">{coupons.length}</span>
+                </div>
+                 <div class="flex justify-between py-2 border-b border-slate-800 text-xs italic">
+                  <span class="text-slate-600">Ambiente de Operação</span>
+                  <span class="text-emerald-500">Local Control Hub</span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Coupons Section -->
+          <section class="bg-slate-900/50 p-8 rounded-2xl border border-slate-800 shadow-xl">
+            <h2 class="text-xl font-bold mb-8 flex items-center gap-2 text-white">
+              <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4v-3a2 2 0 00-2-2H5z"></path></svg>
+              Gerenciar Cupons de Desconto
+            </h2>
+            
+            <form method="POST" id="coupons-form" class="space-y-6">
+              <input type="hidden" name="action" value="save_coupons" />
+              
+              <div id="coupons-list" class="space-y-4">
+                {coupons.map((coupon, index) => (
+                  <div class="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 bg-slate-950/50 rounded-xl border border-slate-800 hover:border-slate-700 transition-colors group">
+                    <input type="hidden" name="id" value={coupon.id} />
+                    <div class="md:col-span-1">
+                      <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Mesa</label>
+                      <input type="text" name="company" value={coupon.company} class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500" />
+                    </div>
+                    <div class="md:col-span-1">
+                      <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Código</label>
+                      <input type="text" name="code" value={coupon.code} class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm font-mono outline-none focus:border-amber-500 text-amber-500" />
+                    </div>
+                    <div class="md:col-span-1">
+                      <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Desconto</label>
+                      <input type="text" name="discount" value={coupon.discount} class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500" />
+                    </div>
+                    <div class="md:col-span-2 flex gap-3 items-end">
+                      <div class="flex-grow">
+                        <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Link Afiliado</label>
+                        <input type="text" name="link" value={coupon.link} class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500 text-blue-400 truncate" />
+                      </div>
+                      <button type="button" onclick="this.parentElement.parentElement.remove()" class="bg-red-900/20 text-red-500 p-2 rounded-lg hover:bg-red-900/40 transition-colors opacity-0 group-hover:opacity-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div class="flex flex-col md:flex-row gap-4 pt-4">
+                <button type="button" id="add-coupon" class="flex-grow bg-slate-800 hover:bg-slate-700 text-slate-300 py-3 rounded-xl border border-slate-700 border-dashed hover:border-slate-500 transition-all font-medium flex items-center justify-center gap-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                  Adicionar Novo Cupom
+                </button>
+                <button class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-12 py-3 rounded-xl transition-all shadow-lg shadow-amber-900/20 active:scale-95">
+                  Salvar Todas as Alterações
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
+    </div>
+  </main>
+</Layout>
+
+<script is:inline>
+  const addBtn = document.getElementById('add-coupon');
+  const container = document.getElementById('coupons-list');
+
+  if (addBtn && container) {
+    addBtn.addEventListener('click', () => {
+      const div = document.createElement('div');
+      div.className = 'grid grid-cols-1 md:grid-cols-5 gap-3 p-4 bg-slate-950/50 rounded-xl border border-slate-800 hover:border-slate-700 transition-colors group animate-in zoom-in-95 duration-200';
+      div.innerHTML = `
+        <input type="hidden" name="id" value="" />
+        <div class="md:col-span-1">
+          <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Mesa</label>
+          <input type="text" name="company" placeholder="Ex: Apex" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500" />
+        </div>
+        <div class="md:col-span-1">
+          <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Código</label>
+          <input type="text" name="code" placeholder="CÓDIGO" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm font-mono outline-none focus:border-amber-500 text-amber-500" />
+        </div>
+        <div class="md:col-span-1">
+          <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Desconto</label>
+          <input type="text" name="discount" placeholder="Ex: 80%" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500" />
+        </div>
+        <div class="md:col-span-2 flex gap-3 items-end">
+          <div class="flex-grow">
+            <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Link Afiliado</label>
+            <input type="text" name="link" placeholder="https://..." class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm outline-none focus:border-amber-500 text-blue-400" />
+          </div>
+          <button type="button" onclick="this.parentElement.parentElement.remove()" class="bg-red-900/20 text-red-500 p-2 rounded-lg hover:bg-red-900/40 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        </div>
+      `;
+      container.appendChild(div);
+      div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    });
+  }
+</script>
+
+<style>
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+</style>

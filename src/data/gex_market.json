@@ -1,0 +1,24 @@
+{
+  "spx": {
+    "name": "S&P 500",
+    "symbol": "ES=F",
+    "lastPrice": 6859.9,
+    "gexTotal": 4.2,
+    "regime": "Positive",
+    "zeroGamma": 5050,
+    "callWall": 5200,
+    "putWall": 4900,
+    "updatedAt": "2026-02-28T17:43:27.427Z"
+  },
+  "nasdaq": {
+    "name": "Nasdaq 100",
+    "symbol": "NQ=F",
+    "lastPrice": 24291.6,
+    "gexTotal": -1.5,
+    "regime": "Negative",
+    "zeroGamma": 18350,
+    "callWall": 18600,
+    "putWall": 17800,
+    "updatedAt": "2026-02-28T17:43:27.428Z"
+  }
+}

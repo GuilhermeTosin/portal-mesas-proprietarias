@@ -1,13 +1,11 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
+import node from '@astrojs/node';
 
 export default defineConfig({
-  site: 'https://guilhermetosin.github.io',
-  base: '/portal-mesas-proprietarias',
-  integrations: [
-    tailwind({
-      // Isso resolve o aviso de "content missing"
-      applyBaseStyles: false,
-    })
-  ],
+  output: 'server',
+  adapter: node({
+    mode: 'standalone',
+  }),
+  integrations: [tailwind()],
 });

@@ -6,13 +6,16 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "update-settlement": "node src/scripts/fetch-cme-settle.js"
   },
   "dependencies": {
+    "@astrojs/node": "^9.5.4",
     "@astrojs/tailwind": "^5.1.5",
     "@tailwindcss/typography": "^0.5.19",
-    "@tailwindcss/vite": "^4.2.1",
     "astro": "^5.17.1",
+    "axios": "^1.13.6",
+    "playwright": "^1.58.2",
     "tailwindcss": "^3.4.19"
   }
 }

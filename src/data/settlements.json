@@ -1,0 +1,12 @@
+{
+  "spx": {
+    "settle": 6920,
+    "source": "CME",
+    "updatedAt": "2026-02-28T17:58:48.597Z"
+  },
+  "nasdaq": {
+    "settle": 25081,
+    "source": "CME",
+    "updatedAt": "2026-02-28T17:58:48.598Z"
+  }
+}

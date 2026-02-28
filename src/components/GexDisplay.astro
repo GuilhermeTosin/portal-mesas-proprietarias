@@ -1,0 +1,169 @@
+---
+// src/components/GexDisplay.astro
+import gexData from '../data/gex_market.json';
+
+// In a real scenario, we would fetch the live price here as well
+// But for this component, we'll use the data from the JSON or pass it as props
+// To keep it consistent with MarketPrices, let's assume we want to show the proximity
+
+const { spx, nasdaq } = gexData;
+
+const formatNumber = (num: number) => num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+const getProximity = (current: number, target: number) => {
+  const diff = current - target;
+  return {
+    diff: Math.abs(diff).toFixed(2),
+    label: diff >= 0 ? 'Acima' : 'Abaixo'
+  };
+};
+
+const spxProx = getProximity(spx.lastPrice, spx.zeroGamma);
+const nasdaqProx = getProximity(nasdaq.lastPrice, nasdaq.zeroGamma);
+---
+
+<div class="w-full max-w-5xl mx-auto my-12 px-4 sm:px-6 lg:px-8">
+  <div class="flex items-center gap-3 mb-6 px-2">
+    <div class="w-2 h-6 bg-blue-600 rounded-full"></div>
+    <h3 class="text-2xl font-bold text-gray-900">Exposição de Gamma (GEX)</h3>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    
+    <!-- SPX GEX Card -->
+    <div class="bg-gray-900 rounded-2xl shadow-2xl p-8 border border-gray-800 relative overflow-hidden group">
+      <div class="absolute top-0 right-0 p-4">
+        <div class={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${spx.regime === 'Positive' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'}`}>
+          <span class={`w-2 h-2 rounded-full animate-pulse ${spx.regime === 'Positive' ? 'bg-blue-400' : 'bg-orange-400'}`}></span>
+          Regime {spx.regime === 'Positive' ? 'Estável' : 'Volátil'}
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <h4 class="text-gray-400 text-sm font-medium mb-1">Mercado</h4>
+        <div class="text-3xl font-bold text-white flex items-baseline gap-3">
+          S&P 500
+          <span class="text-lg font-mono text-gray-500">GEX: {spx.gexTotal > 0 ? '+' : ''}{spx.gexTotal}bn</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-6 mb-8">
+        <div class="space-y-1">
+          <span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Call Wall</span>
+          <div class="flex items-center gap-2">
+            <span class="bg-green-500/20 text-green-400 text-[10px] px-1.5 py-0.5 rounded border border-green-500/30 uppercase font-bold">Resistência</span>
+            <span class="text-xl font-mono text-white font-bold">{formatNumber(spx.callWall)}</span>
+          </div>
+        </div>
+        <div class="space-y-1">
+          <span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Put Wall</span>
+          <div class="flex items-center gap-2">
+            <span class="bg-red-500/20 text-red-400 text-[10px] px-1.5 py-0.5 rounded border border-red-500/30 uppercase font-bold">Suporte</span>
+            <span class="text-xl font-mono text-white font-bold">{formatNumber(spx.putWall)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-black/40 rounded-xl p-5 border border-gray-800/50 relative">
+        <div class="flex justify-between items-center">
+          <div class="group/hint relative">
+            <div class="flex items-center gap-2 cursor-help">
+              <span class="text-xs text-gray-400 font-medium">Zero Gamma</span>
+              <svg class="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <!-- Tooltip -->
+            <div class="absolute bottom-full left-0 mb-2 w-48 p-2 bg-gray-800 text-[10px] text-gray-300 rounded shadow-xl opacity-0 group-hover/hint:opacity-100 transition-opacity pointer-events-none z-20 border border-gray-700">
+              O 'Zero Gamma' é o ponto de inflexão da volatilidade. Abaixo dele, a volatilidade costuma expandir rapidamente.
+            </div>
+          </div>
+          <span class="text-sm font-mono text-blue-400 font-bold">{formatNumber(spx.zeroGamma)}</span>
+        </div>
+        <div class="mt-3 flex items-center justify-between">
+          <span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Proximidade</span>
+          <span class={`text-xs font-bold ${spxProx.label === 'Acima' ? 'text-green-400' : 'text-red-400'}`}>
+            {spxProx.diff} pts {spxProx.label}
+          </span>
+        </div>
+      </div>
+      
+      {spx.regime === 'Negative' && (
+        <div class="mt-6 flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 p-3 rounded-lg">
+          <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          <span class="text-[10px] font-bold text-orange-400 uppercase tracking-widest">Alerta: Volatilidade Alta</span>
+        </div>
+      )}
+    </div>
+
+    <!-- Nasdaq Card -->
+    <div class="bg-gray-900 rounded-2xl shadow-2xl p-8 border border-gray-800 relative overflow-hidden group">
+      <div class="absolute top-0 right-0 p-4">
+        <div class={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${nasdaq.regime === 'Positive' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'}`}>
+          <span class={`w-2 h-2 rounded-full animate-pulse ${nasdaq.regime === 'Positive' ? 'bg-blue-400' : 'bg-orange-400'}`}></span>
+          Regime {nasdaq.regime === 'Positive' ? 'Estável' : 'Volátil'}
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <h4 class="text-gray-400 text-sm font-medium mb-1">Mercado</h4>
+        <div class="text-3xl font-bold text-white flex items-baseline gap-3">
+          Nasdaq 100
+          <span class="text-lg font-mono text-gray-500">GEX: {nasdaq.gexTotal > 0 ? '+' : ''}{nasdaq.gexTotal}bn</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-6 mb-8">
+        <div class="space-y-1">
+          <span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Call Wall</span>
+          <div class="flex items-center gap-2">
+            <span class="bg-green-500/20 text-green-400 text-[10px] px-1.5 py-0.5 rounded border border-green-500/30 uppercase font-bold">Resistência</span>
+            <span class="text-xl font-mono text-white font-bold">{formatNumber(nasdaq.callWall)}</span>
+          </div>
+        </div>
+        <div class="space-y-1">
+          <span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Put Wall</span>
+          <div class="flex items-center gap-2">
+            <span class="bg-red-500/20 text-red-400 text-[10px] px-1.5 py-0.5 rounded border border-red-500/30 uppercase font-bold">Suporte</span>
+            <span class="text-xl font-mono text-white font-bold">{formatNumber(nasdaq.putWall)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-black/40 rounded-xl p-5 border border-gray-800/50 relative">
+        <div class="flex justify-between items-center">
+          <div class="group/hint relative">
+            <div class="flex items-center gap-2 cursor-help">
+              <span class="text-xs text-gray-400 font-medium">Zero Gamma</span>
+              <svg class="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <!-- Tooltip -->
+            <div class="absolute bottom-full left-0 mb-2 w-48 p-2 bg-gray-800 text-[10px] text-gray-300 rounded shadow-xl opacity-0 group-hover/hint:opacity-100 transition-opacity pointer-events-none z-20 border border-gray-700">
+              O 'Zero Gamma' é o ponto de inflexão da volatilidade. Abaixo dele, a volatilidade costuma expandir rapidamente.
+            </div>
+          </div>
+          <span class="text-sm font-mono text-blue-400 font-bold">{formatNumber(nasdaq.zeroGamma)}</span>
+        </div>
+        <div class="mt-3 flex items-center justify-between">
+          <span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Proximidade</span>
+          <span class={`text-xs font-bold ${nasdaqProx.label === 'Acima' ? 'text-green-400' : 'text-red-400'}`}>
+            {nasdaqProx.diff} pts {nasdaqProx.label}
+          </span>
+        </div>
+      </div>
+
+      {nasdaq.regime === 'Negative' && (
+        <div class="mt-6 flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 p-3 rounded-lg">
+          <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          <span class="text-[10px] font-bold text-orange-400 uppercase tracking-widest">Alerta: Volatilidade Alta</span>
+        </div>
+      )}
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* Custom glassmorphism and flicker effects if needed */
+  .shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+</style>

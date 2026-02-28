@@ -1,0 +1,40 @@
+name: Market Data Auto Update
+
+on:
+  schedule:
+    # 18:30 BRT é 21:30 UTC. Rodar de Segunda a Sexta.
+    - cron: '30 21 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-market-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium
+
+      - name: Run CME Scraper
+        run: npm run update-settlement
+
+      - name: Commit and Push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add src/data/market_data.json
+          git commit -m "chore: auto-update settlement prices [skip ci]" || echo "No changes to commit"
+          git push

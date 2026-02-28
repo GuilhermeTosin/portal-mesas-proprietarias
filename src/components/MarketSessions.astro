@@ -3,7 +3,7 @@
 import holidaysData from '../data/holidays.json';
 ---
 
-<div class="market-sessions-container w-full max-w-5xl mx-auto mb-12" id="market-sessions-widget" data-holidays={JSON.stringify(holidaysData)}>
+<div class="market-sessions-container w-full max-w-7xl mx-auto mb-12" id="market-sessions-widget" data-holidays={JSON.stringify(holidaysData)}>
   <div class="flex items-center justify-between mb-6 px-2">
     <h3 class="text-xl font-bold flex items-center gap-2 text-gray-900">
       <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -22,8 +22,31 @@ import holidaysData from '../data/holidays.json';
     </div>
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
     
+    <!-- B3 (Brasil) -->
+    <div class="session-card bg-gray-900/80 backdrop-blur-md border border-gray-700/50 rounded-xl p-5 shadow-lg relative overflow-hidden group transition-all duration-300 hover:border-gray-500/50 hover:-translate-y-1" data-session="b3">
+      <div class="absolute -right-6 -top-6 w-24 h-24 bg-yellow-500/10 rounded-full blur-2xl group-hover:bg-yellow-500/20 transition-all"></div>
+      <div class="flex justify-between items-start mb-4 relative z-10">
+        <div class="flex items-center gap-3">
+          <h4 class="font-bold text-gray-100">Brasil (B3)</h4>
+        </div>
+        <div class="session-status px-2 py-1 rounded text-xs font-bold leading-none bg-gray-800 text-gray-400 border border-gray-700">
+          --
+        </div>
+      </div>
+      <div class="space-y-2 text-sm relative z-10">
+        <div class="flex justify-between border-b border-gray-700/50 pb-1">
+          <span class="text-gray-400">Abertura:</span>
+          <span class="text-gray-200 font-medium session-open">--:--</span>
+        </div>
+        <div class="flex justify-between pb-1">
+          <span class="text-gray-400">Fechamento:</span>
+          <span class="text-gray-200 font-medium session-close">--:--</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Sydney -->
     <div class="session-card bg-gray-900/80 backdrop-blur-md border border-gray-700/50 rounded-xl p-5 shadow-lg relative overflow-hidden group transition-all duration-300 hover:border-gray-500/50 hover:-translate-y-1" data-session="sydney">
       <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
@@ -116,6 +139,8 @@ import holidaysData from '../data/holidays.json';
       </div>
     </div>
 
+
+
   </div>
 </div>
 
@@ -135,6 +160,7 @@ import holidaysData from '../data/holidays.json';
     // Tokyo: 00:00 - 09:00
 
     const sessionsData = {
+      b3: { startHourUtc: 13, endHourUtc: 21 }, // 10:00 - 18:00 BRT
       sydney: { startHourUtc: 22, endHourUtc: 7 }, // Cruza a meia noite
       tokyo: { startHourUtc: 0, endHourUtc: 9 },
       london: { startHourUtc: 8, endHourUtc: 16 },
@@ -164,7 +190,8 @@ import holidaysData from '../data/holidays.json';
 
     // Parse Holidays
     const widgetEl = document.getElementById('market-sessions-widget');
-    const holidays = widgetEl ? JSON.parse(widgetEl.dataset.holidays || '[]') : [];
+    const allHolidays = widgetEl ? JSON.parse(widgetEl.dataset.holidays || '{}') : { usa: [], brazil: [] };
+    const holidays = allHolidays.usa || [];
 
     const updateSessions = () => {
       const now = new Date();
@@ -203,10 +230,17 @@ import holidaysData from '../data/holidays.json';
         const openEl = card.querySelector('.session-open');
         const closeEl = card.querySelector('.session-close');
 
-        // Check Holidays logic for New York
+        // Check Holidays logic
         let holidayInfo = null;
-        if (sessionKey === 'newyork') {
-            const todayHoliday = holidays.find(h => h.date === nyDateStr);
+        if (sessionKey === 'newyork' || sessionKey === 'b3') {
+            const regionHolidays = sessionKey === 'newyork' ? allHolidays.usa : allHolidays.brazil;
+            const targetDateStr = sessionKey === 'newyork' ? nyDateStr : 
+                new Intl.DateTimeFormat('en-CA', { 
+                  timeZone: 'America/Sao_Paulo', 
+                  year: 'numeric', month: '2-digit', day: '2-digit' 
+                }).format(now);
+
+            const todayHoliday = regionHolidays.find(h => h.date === targetDateStr);
             if (todayHoliday) {
                 holidayInfo = todayHoliday;
                 if (holidayInfo.status === 'early_close' && holidayInfo.close_time_utc) {

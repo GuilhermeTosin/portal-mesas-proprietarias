@@ -1,10 +1,12 @@
 ---
 // src/components/MarketPrices.astro
+import holidays from '../data/holidays.json';
+import marketData from '../data/market_data.json';
 
-async function fetchMarketData(symbol: string) {
+async function fetchHistoricalData(symbol: string) {
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1d&interval=1d`;
-    // Disativamos o cache para pegar a cotação ao vivo a cada build ou SSR request
+    // Pegamos 5 dias para garantir que temos o dia anterior completo
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=5d&interval=1d`;
     const response = await fetch(url, { headers: { "Cache-Control": "no-cache" } });
     if (!response.ok) throw new Error("Fetch falhou");
     
@@ -12,79 +14,131 @@ async function fetchMarketData(symbol: string) {
     const result = data.chart?.result?.[0];
     if (!result) throw new Error("Formato inválido");
 
-    const meta = result.meta;
+    const timestamps = result.timestamp;
     const quote = result.indicators?.quote?.[0];
+    const highArray = quote?.high || [];
+    const lowArray = quote?.low || [];
     
-    // Procura o primeiro valor de abertura não-nulo do dia
-    const openArray = quote?.open || [];
-    const openPrice = openArray.find((v: number | null) => v !== null) || meta.regularMarketPrice;
+    // O último índice pode ser o dia atual (em andamento), buscamos o anterior (completo)
+    // Se o mercado está aberto hoje, o último elemento é hoje. O anterior é ontem.
+    const lastIndex = timestamps.length - 1;
+    const prevIndex = lastIndex - 1;
 
     return {
-      open: openPrice,
-      close: meta.regularMarketPrice,
-      previousClose: meta.previousClose
+      high: highArray[prevIndex] || highArray[lastIndex],
+      low: lowArray[prevIndex] || lowArray[lastIndex],
+      timestamp: timestamps[prevIndex] || timestamps[lastIndex]
     };
   } catch (error) {
-    console.error(`Erro buscando ${symbol}:`, error);
+    console.error(`Erro buscando histórico para ${symbol}:`, error);
     return null;
   }
 }
 
-const spxData = await fetchMarketData("ES=F");
-const nasdaqData = await fetchMarketData("NQ=F");
+// Lógica de verificação de feriado
+const checkHoliday = (region: 'usa' | 'brazil') => {
+  const now = new Date();
+  const tz = region === 'usa' ? 'America/New_York' : 'America/Sao_Paulo';
+  const dateStr = new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(now);
+  const regionHolidays = holidays[region] || [];
+  // @ts-ignore
+  return regionHolidays.find(h => h.date === dateStr && h.status === 'closed');
+};
+
+const isUsaHoliday = checkHoliday('usa');
+
+const spxHist = await fetchHistoricalData("ES=F");
+const nasdaqHist = await fetchHistoricalData("NQ=F");
 
 const formatPrice = (price: number | undefined | null) => {
   if (price === undefined || price === null) return "---";
-  return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
+
+const formatDate = (timestamp: number | undefined | null) => {
+  if (!timestamp) return "";
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: 'America/New_York'
+  }).format(new Date(timestamp * 1000));
+};
+
+const spxSettle = marketData.settlement.spx;
+const nasdaqSettle = marketData.settlement.nasdaq;
+
 ---
 
 <div class="w-full max-w-5xl mx-auto my-8 px-4 sm:px-6 lg:px-8">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     
     <!-- S&P 500 (ES=F) -->
-    <div class="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col items-center justify-center text-center transition-transform hover:-translate-y-1 hover:shadow-lg">
-      <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-        S&P 500 Futuros
-      </h3>
-      <div class="space-y-3 w-full max-w-xs">
+    <div class="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col items-center justify-center text-center transition-transform hover:-translate-y-1 hover:shadow-lg relative overflow-hidden">
+      {isUsaHoliday && (
+        <div class="absolute inset-0 bg-gray-900/10 backdrop-blur-[2px] z-10 flex items-center justify-center">
+          <span class="bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-orange-600 border border-orange-200 shadow-sm">
+            {isUsaHoliday.name} (Fechado)
+          </span>
+        </div>
+      )}
+      <div class="w-full flex justify-between items-start mb-4">
+        <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+          S&P 500 Futuros
+        </h3>
+        {spxHist?.timestamp && <span class="text-[10px] text-gray-400 font-mono mt-1">{formatDate(spxHist.timestamp)}</span>}
+      </div>
+      
+      <div class="w-full space-y-4 pt-2">
         <div class="flex justify-between items-center border-b border-gray-100 pb-2">
-          <span class="text-gray-500 font-medium">Abertura</span>
-          <span class="text-lg font-mono font-bold text-gray-800">{formatPrice(spxData?.open)}</span>
+          <span class="text-xs text-blue-600 font-bold uppercase tracking-wider">Ajuste Anterior</span>
+          <span class="text-xl font-mono font-bold text-gray-900">{formatPrice(spxSettle)}</span>
         </div>
         <div class="flex justify-between items-center border-b border-gray-100 pb-2">
-          <span class="text-gray-500 font-medium">Fechamento</span>
-          <span class="text-lg font-mono font-bold text-blue-600">{formatPrice(spxData?.close)}</span>
+          <span class="text-xs text-gray-500 font-medium italic">Máxima Dia Anterior</span>
+          <span class="text-xl font-mono font-bold text-green-600">{formatPrice(spxHist?.high)}</span>
         </div>
-        <div class="flex justify-between items-center pb-1">
-          <span class="text-gray-500 font-medium">Ajuste</span>
-          <span class="text-lg font-mono font-bold text-gray-600">{formatPrice(spxData?.previousClose)}</span>
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-gray-500 font-medium italic">Mínima Dia Anterior</span>
+          <span class="text-xl font-mono font-bold text-red-600">{formatPrice(spxHist?.low)}</span>
         </div>
       </div>
     </div>
     
     <!-- Nasdaq 100 (NQ=F) -->
-    <div class="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col items-center justify-center text-center transition-transform hover:-translate-y-1 hover:shadow-lg">
-      <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-        Nasdaq 100 Futuros
-      </h3>
-      <div class="space-y-3 w-full max-w-xs">
+    <div class="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col items-center justify-center text-center transition-transform hover:-translate-y-1 hover:shadow-lg relative overflow-hidden">
+      {isUsaHoliday && (
+        <div class="absolute inset-0 bg-gray-900/10 backdrop-blur-[2px] z-10 flex items-center justify-center">
+          <span class="bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-orange-600 border border-orange-200 shadow-sm">
+            {isUsaHoliday.name} (Fechado)
+          </span>
+        </div>
+      )}
+      <div class="w-full flex justify-between items-start mb-4">
+        <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+          Nasdaq 100 Futuros
+        </h3>
+        {nasdaqHist?.timestamp && <span class="text-[10px] text-gray-400 font-mono mt-1">{formatDate(nasdaqHist.timestamp)}</span>}
+      </div>
+
+      <div class="w-full space-y-4 pt-2">
         <div class="flex justify-between items-center border-b border-gray-100 pb-2">
-          <span class="text-gray-500 font-medium">Abertura</span>
-          <span class="text-lg font-mono font-bold text-gray-800">{formatPrice(nasdaqData?.open)}</span>
+          <span class="text-xs text-blue-600 font-bold uppercase tracking-wider">Ajuste Anterior</span>
+          <span class="text-xl font-mono font-bold text-gray-900">{formatPrice(nasdaqSettle)}</span>
         </div>
         <div class="flex justify-between items-center border-b border-gray-100 pb-2">
-          <span class="text-gray-500 font-medium">Fechamento</span>
-          <span class="text-lg font-mono font-bold text-blue-600">{formatPrice(nasdaqData?.close)}</span>
+          <span class="text-xs text-gray-500 font-medium italic">Máxima Dia Anterior</span>
+          <span class="text-xl font-mono font-bold text-green-600">{formatPrice(nasdaqHist?.high)}</span>
         </div>
-        <div class="flex justify-between items-center pb-1">
-          <span class="text-gray-500 font-medium">Ajuste</span>
-          <span class="text-lg font-mono font-bold text-gray-600">{formatPrice(nasdaqData?.previousClose)}</span>
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-gray-500 font-medium italic">Mínima Dia Anterior</span>
+          <span class="text-xl font-mono font-bold text-red-600">{formatPrice(nasdaqHist?.low)}</span>
         </div>
       </div>
     </div>
-    
   </div>
 </div>
+
+
